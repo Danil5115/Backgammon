@@ -58,3 +58,26 @@ class BackgammonGame(Backgammon): # запуск
         else:
             print("No saved game found.")
         self.turn()
+
+    def determine_start_player(self):
+        white_roll = roll_die()
+        print("White rolled a", white_roll)
+        black_roll = roll_die()
+        print("Black rolled a", black_roll)
+        if white_roll == black_roll:
+            print("Rolling again.")
+            return self.determine_start_player()
+        elif white_roll > black_roll:
+            print("White to play first.")
+            return True
+        else:
+            print("Black to play first.")
+            return False
+
+    def roll_and_parse_dice(self):
+        dice = roll_dice()
+        print("Rolled: ", dice)
+        if dice[0] == dice[1]:  # Double
+            self.dice = [dice[0]] * 4
+        else:
+            self.dice = list(dice)
