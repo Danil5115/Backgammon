@@ -125,3 +125,17 @@ class Backgammon:
             self.white_moves.append((start, end))
         else:
             self.black_moves.append((start, end))
+
+
+    def valid_move(self, start: int, end: int) -> bool: #допустимый ли ход в игре
+        has_checkers = self.board[start] >= 1 if self.white_to_move else self.board[start] <= -1 #есть ли у игрока, который должен сходить там шашка TRUE если да
+        in_range = (self.bar_white_idx < end < self.bar_black_idx) #проверка находится ли end в допустимом значение для перемещения шашки от 1 до 24
+        if not in_range: # если не находится доп проверка
+            bearing_off = self.white_bearing_off if self.white_to_move else self.black_bearing_off #проверка разрешено ли выносить шашки с доски
+            if self.white_to_move:
+                valid_bear_off = (end == self.bar_black_idx) or ((end > self.bar_black_idx) and (start == self.white_farthest_occupied_point)) #разрешено ли выносить шашку на позицию end/ Проверяется, больше ли end значения self.bar_black_idx и является ли начальная позиция start самой дальней занятой белой позицией
+            else:
+                valid_bear_off = (end == self.bar_white_idx) or ((end < self.bar_white_idx) and (start == self.black_farthest_occupied_point))
+            return has_checkers and bearing_off and valid_bear_off #идёт проверка по трём условиям
+        blocked = self.board[end] <= -2 if self.white_to_move else self.board[end] >= 2 # проверка если находится в диапазоне разрешенного,проверяем не заблокирована ли данная позиция чужой шашкой
+        return has_checkers and (not blocked) #итог можно или нет
