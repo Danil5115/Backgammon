@@ -115,3 +115,31 @@ class BackgammonGame(Backgammon): # запуск
 
     def is_computer_move(self):
         return not self.white_to_move
+    
+
+    def flip_turn(self):
+        print()
+        game_over = self.white_won if self.white_to_move else self.black_won
+        if game_over:
+            print(("White" if self.white_to_move else "Black") + " wins!")
+
+            print("White statistics:")
+            print("Number of moves:", len(self.white_moves))
+            print("Number of checkers captured:", self.white_captured)
+            print("Number of checkers left on the board:", 15 - self.white_captured)
+            print("The number of knocked out checkers during the game by the opponent:", self.white_to_bar )
+
+            print("\nBlack statistics:")
+            print("Number of moves:", len(self.black_moves))
+            print("Number of checkers captured:", self.black_captured)
+            print("Number of checkers left on the board:", 15 - self.black_captured)
+            print("The number of knocked out checkers during the game by the opponent:", self.black_to_bar )
+            
+
+            return
+        self.white_to_move = not self.white_to_move
+        self.turn()
+
+
+if __name__ == '__main__':
+    game = BackgammonGame()
