@@ -73,3 +73,55 @@ class Backgammon:
     #def reset_flags(self):  # эти флаги нужны, чтобы не было вывода несколько раз сообщений о введение в бар
         #self.black_stone_moved = False
         #self.white_stone_moved = False
+
+    def move(self, start: int, end: int):
+        #self.reset_flags()
+        if self.white_to_move: #проверка ход ли белых(True да, False чёрные)
+            assert self.board[start] > 0, "Invalid move: it is white's turn" #проверка тот ли ходит
+            self.board[start] -= 1 #удаление шашки с поля
+            if end >= self.bar_black_idx: #уведомление о том, чтобы не идти на бар противника и дальше, выкидывать шашки
+                assert self.white_bearing_off, "Invalid move: white is not bearing off" #проверяем условие можно ли выкидывать шашки с поля, если не выполняется то нафиг
+            else:
+                assert self.board[end] >= -1, "Invalid move: blocked" #проверка, не заблокировано ли место шашками противника
+                if self.board[end] == -1: #если там одна шашка, то съедаем и отправляем её в бар
+                    self.board[self.bar_black_idx] -= 1
+                    self.board[end] = 1
+                    self.black_to_bar += 1
+                    #if not self.black_stone_moved:
+                        #print("The black stone moves to the bar")
+                        #self.black_stone_moved = True
+                else: #если там не врага, то просто переносим шашку
+                    self.board[end] += 1
+        else:
+            assert self.board[start] < 0, "Invalid move: it is black's turn"
+            self.board[start] += 1
+            if end <= self.bar_white_idx:
+                assert self.black_bearing_off, "Invalid move: black is not bearing off"
+            else:
+                assert self.board[end] <= 1, "Invalid move: blocked"
+                if self.board[end] == 1:
+                    self.board[self.bar_white_idx] += 1
+                    self.board[end] = -1
+                    self.white_to_bar += 1
+                    #if not self.white_stone_moved:
+                        #print("The white stone moves to the bar")
+                        #self.white_stone_moved = True
+                    
+                else:
+                    self.board[end] -= 1
+
+        # Проверка, вышел ли камень из игры для белых ??
+        if self.white_to_move and start != self.bar_white_idx and end >= self.bar_black_idx:
+            self.white_captured += 1
+            print("White stone captured!")
+
+        # Проверка, вышел ли камень из игры для черных
+        if not self.white_to_move and start != self.bar_black_idx and end <= self.bar_white_idx:
+            self.black_captured += 1
+            print("Black stone captured!")
+
+        # Добавляем перемещение в соответствующий список
+        if self.white_to_move:
+            self.white_moves.append((start, end))
+        else:
+            self.black_moves.append((start, end))
