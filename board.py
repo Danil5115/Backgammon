@@ -151,3 +151,43 @@ class Backgammon:
             die = die if self.white_to_move else (-die) #если белые то остаётся так как они идут по возвышению,если чёрные то меняем
             valid_moves += [(i, i+die) for i in possible_start_indices if self.valid_move(i, i+die)] #проверка на то возможно ли сделать такой ход, если да, то добавляется в список
         return valid_moves
+    
+    def generate_valid_turns(self, dice: list) -> list:
+        #return list of valid [(start, end), (start, end)] turns in current position.
+        def move_die(move): #move кортеж из start and end
+            def keep_in_range(index):
+                return max(min(index, self.bar_white_idx), self.bar_black_idx) #значение index находится в допустимом диапазоне, про случай нахождения в спец области(бар?)
+            return abs(keep_in_range(move[1]) - keep_in_range(move[0])) #возварщение абслютного + значения для вычисления ситуации и значения, в том числе для бара
+
+        def raw_move_die(move):
+            return abs(move[1] - move[0]) #сырое значение абсолютное, которое не учитывает состояние на баре
+
+        def sum_dice_turn(turn): #общая сумма расстояний для всех ходов в списке turn
+            return sum(move_die(move) for move in turn)
+
+        valid_moves = self.generate_valid_moves(set(dice)) #просто создаётся новый список допустимых ходов, set чтобы оставить только уникальыне значения
+        remaining_checkers = abs(sum(self.board[i] for i in (self.white_indices if self.white_to_move else self.black_indices))) #вычисляется количество оставшихся шашек на доске
+        if len(dice) == 1 or remaining_checkers == 1: #если 1 кость и 1 шашка то каждый ход из списка valid_moves будет представлен отдельным списком, содержащим только этот ход.
+            return [[move] for move in valid_moves]
+        valid_turns = [] # все допустимые ходы
+        for move in valid_moves:
+            remaining_dice = dice[:] #копия костей
+            try:
+                remaining_dice.remove(raw_move_die(move))
+            except ValueError:
+                continue # если всё пробрано идём дальше
+            copy = self.copy() #если всё норм то копируем настоящее состояние
+            copy.move(*move) #здесь вызывается этот метод ход к доске
+            if remaining_dice: #проверка остались ли ещё ходы камни
+                valid_turns += [[move] + continuation for continuation in copy.generate_valid_turns(remaining_dice)] #рекурсивный вызов метода для копии доски каждое продолжение хода в valid_turns
+        if not valid_turns:
+            return []
+        most_dice = max(len(turn) for turn in valid_turns)
+        if most_dice == 1:  # Must play larger die
+            larger = max(dice) #1, это означает, что все ходы имеют только один элемент. а затем в valid_turns оставляются только ходы, у которых "сырое" расстояние первого хода (raw_move_die(turn[0])) равно larger.
+            valid_turns = [turn for turn in valid_turns if raw_move_die(turn[0]) == larger]
+        else:  # Must play most dice possible
+            valid_turns = [turn for turn in valid_turns if len(turn) == most_dice] #оставляются только ходы с длиной, равной most_dice
+            max_dice_value = max(sum_dice_turn(turn) for turn in valid_turns) #равное максимальной сумме расстояний ходов (sum_dice_turn(turn)) среди всех оставшихся ходов в valid_turns
+            valid_turns = [turn for turn in valid_turns if sum_dice_turn(turn) == max_dice_value] #остаются только ходы, у которых сумма расстояний равна max_dice_value.
+        return valid_turns #Возвращается список valid_turns с отфильтрованными и отсортированными ходами.
