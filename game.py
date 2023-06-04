@@ -81,3 +81,37 @@ class BackgammonGame(Backgammon): # запуск
             self.dice = [dice[0]] * 4
         else:
             self.dice = list(dice)
+
+    def turn(self):
+        print(self)
+
+        print(("White" if self.white_to_move else "Black") + " to move.") #кто ходит
+        self.roll_and_parse_dice() # кости
+
+        possible_turns = self.generate_valid_turns(self.dice) #генерирует все возможные варианты
+        while self.dice:
+            if not possible_turns:  # No valid turns
+                print("No valid moves left.")
+                self.flip_turn()
+                return
+
+            if self.is_computer_move():
+                print("Computer's turn.")
+                start, end = random.choice(possible_turns)[0] #рандомный вариант компом
+                print("Computer moves from index", start, "to index", end)
+            else:
+                print("Select the start index.") #ход человека
+                start = int(prompt_for_input_from_list(set(turn[0][0] for turn in possible_turns)))
+
+                possible_end_indices = set(turn[0][1] for turn in possible_turns if turn[0][0] == start)
+                print("Select the end index.")
+                end = int(prompt_for_input_from_list(possible_end_indices))
+
+            self.move(start, end)
+            self.dice.remove(abs(start - end)) #удаление значение игральной кости использованной
+            possible_turns = self.generate_valid_turns(self.dice)
+        self.save_game()
+        self.flip_turn()
+
+    def is_computer_move(self):
+        return not self.white_to_move
