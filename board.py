@@ -191,3 +191,39 @@ class Backgammon:
             max_dice_value = max(sum_dice_turn(turn) for turn in valid_turns) #равное максимальной сумме расстояний ходов (sum_dice_turn(turn)) среди всех оставшихся ходов в valid_turns
             valid_turns = [turn for turn in valid_turns if sum_dice_turn(turn) == max_dice_value] #остаются только ходы, у которых сумма расстояний равна max_dice_value.
         return valid_turns #Возвращается список valid_turns с отфильтрованными и отсортированными ходами.
+
+
+    def copy(self): # для создания копии объекта класса Backgammon.
+        return Backgammon(self.board[:], self.white_to_move) #создание копии и внесение тужа доски, второе кто должен сделать ход
+
+    def __str__(self): #принимает целочисленное значение val и возвращает строковое представление этого значения. заменяет цифры на буквы(цвета)
+        def tile_to_string(val: int) -> str:
+            """ Return three-character string representation """
+            if val == 0:
+                return "   " #пустота
+            if val > 0:
+                return f"{val:2d}W" #white
+            if val < 0:
+                return f"{abs(val):2d}B" #black
+
+        out = " " + "   ".join(f"{x:2d}" for x in range(1, 7))
+        out += "   bar   "
+        out += "   ".join(f"{x:2d}" for x in range(7, 13))
+        out += '\n' + '- ' * 33 + '\n'
+        out += '  '.join(tile_to_string(x) for x in self.board[1:7]) + " |"
+        out += tile_to_string(self.bar_white) + ' | '
+        out += '  '.join(tile_to_string(x) for x in self.board[7:13])
+        out += '\n' + '- ' * 33 + '\n'
+        out += '  '.join(tile_to_string(x) for x in self.board[24:18:-1]) + " |"
+        out += tile_to_string(self.bar_black) + ' | '
+        out += '  '.join(tile_to_string(x) for x in self.board[18:12:-1])
+        out += '\n' + '- ' * 33 + '\n'
+        out += " " + "   ".join(f"{x:2d}" for x in range(24, 18, -1))
+        out += "   bar   "
+        out += "   ".join(f"{x:2d}" for x in range(18, 12, -1))
+        out += "\n"
+        out += f"White captured: {self.white_captured}\n"
+        out += f"Black captured: {self.black_captured}\n"
+        return out
+
+
