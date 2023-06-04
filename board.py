@@ -139,3 +139,15 @@ class Backgammon:
             return has_checkers and bearing_off and valid_bear_off #идёт проверка по трём условиям
         blocked = self.board[end] <= -2 if self.white_to_move else self.board[end] >= 2 # проверка если находится в диапазоне разрешенного,проверяем не заблокирована ли данная позиция чужой шашкой
         return has_checkers and (not blocked) #итог можно или нет
+    
+
+    def generate_valid_moves(self, dice: list) -> list: #варианты допустимых ходов
+        #return list of valid (start, end) moves in current position.
+        on_bar = self.white_on_bar if self.white_to_move else self.black_on_bar #количество шашек на баре
+        bar_index = self.bar_white_idx if self.white_to_move else self.bar_black_idx #сохраняем индекс бара в зависимости от цвета
+        possible_start_indices = [bar_index] if on_bar else (self.white_indices if self.white_to_move else self.black_indices) #индексы возможных ходов, если есть что-то на баре, то добавялется оно или наоборот всё остальное
+        valid_moves = []
+        for die in dice:
+            die = die if self.white_to_move else (-die) #если белые то остаётся так как они идут по возвышению,если чёрные то меняем
+            valid_moves += [(i, i+die) for i in possible_start_indices if self.valid_move(i, i+die)] #проверка на то возможно ли сделать такой ход, если да, то добавляется в список
+        return valid_moves
