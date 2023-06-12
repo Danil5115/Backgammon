@@ -1,3 +1,9 @@
+class Checker:
+    def __init__(self):
+        self.white_moves = []  # Список для хранения перемещений белых шашек
+        self.black_moves = []  # Список для хранения перемещений черных шашек
+
+
 class Backgammon:
     bar_white_idx = 0
     bar_black_idx = 25
@@ -14,8 +20,9 @@ class Backgammon:
         self.black_captured = 0
         self.white_to_bar = 0
         self.black_to_bar = 0
-        self.white_moves = []  # Список для хранения перемещений белых камней
-        self.black_moves = []  # Список для хранения перемещений черных камней
+        self.checker = Checker()
+        #self.white_moves = []  # Список для хранения перемещений белых камней
+        #self.black_moves = []  # Список для хранения перемещений черных камней
         #self.black_stone_moved = False  # Флаг для отслеживания перемещения черного камня
         #self.white_stone_moved = False  # Флаг для отслеживания перемещения белого камня
 
@@ -122,9 +129,9 @@ class Backgammon:
 
         # Добавляем перемещение в соответствующий список
         if self.white_to_move:
-            self.white_moves.append((start, end))
+            self.checker.white_moves.append((start, end))
         else:
-            self.black_moves.append((start, end))
+            self.checker.black_moves.append((start, end))
 
 
     def valid_move(self, start: int, end: int) -> bool: #допустимый ли ход в игре

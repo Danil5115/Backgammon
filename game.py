@@ -39,8 +39,8 @@ class BackgammonGame(Backgammon): # запуск
             "black captured": self.black_captured,
             "white bar count": self.white_to_bar,
             "black bar count": self.black_to_bar,
-            "white_moves": self.white_moves,  # Сохраняем список перемещений белых камней
-            "black_moves": self.black_moves  # Сохраняем список перемещений черных камней
+            "white_moves": self.checker.white_moves,  # Сохраняем список перемещений белых камней
+            "black_moves": self.checker.black_moves  # Сохраняем список перемещений черных камней
         }
 
         with open("game_state.json", "w") as file:
