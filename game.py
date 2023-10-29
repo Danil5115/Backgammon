@@ -5,7 +5,7 @@ import json
 import os
 
 
-def prompt_for_input_from_list(options: set): #запрос ответа у пользователя
+def prompt_for_input_from_list(options: set): #request a response from the user
     response = None
     formatted_options = sorted(options)
     options = {str(x) for x in options}
@@ -16,7 +16,7 @@ def prompt_for_input_from_list(options: set): #запрос ответа у по
             print("Invalid selection.")
     return response
 
-class BackgammonGame(Backgammon): # запуск
+class BackgammonGame(Backgammon): # start
     START_BOARD = [0, 2, 0, 0, 0, 0, -5, 0, -3, 0, 0, 0, 5, -5, 0, 0, 0, 3, 0, 5, 0, 0, 0, 0, -2, 0]
 
     def __init__(self, start_board=START_BOARD, start_new_game=True):
@@ -39,8 +39,8 @@ class BackgammonGame(Backgammon): # запуск
             "black captured": self.black_captured,
             "white bar count": self.white_to_bar,
             "black bar count": self.black_to_bar,
-            "white_moves": self.checker.white_moves,  # Сохраняем список перемещений белых камней
-            "black_moves": self.checker.black_moves  # Сохраняем список перемещений черных камней
+            "white_moves": self.checker.white_moves,  # Save the list of movements of white stones
+            "black_moves": self.checker.black_moves  # Save the list of movements of black stones
         }
 
         with open("game_state.json", "w") as file:
@@ -53,8 +53,8 @@ class BackgammonGame(Backgammon): # запуск
                 self.board = state["board"]
                 self.white_to_move = state["white_to_move"]
                 self.dice = state["dice"]
-                self.white_moves = state["white_moves"]  # Загружаем список перемещений белых камней
-                self.black_moves = state["black_moves"]  # Загружаем список перемещений черных камней
+                self.white_moves = state["white_moves"]  # Load the list of movements of white stones
+                self.black_moves = state["black_moves"]  # Load the list of movements of black stones
         else:
             print("No saved game found.")
         self.turn()
@@ -85,10 +85,10 @@ class BackgammonGame(Backgammon): # запуск
     def turn(self):
         print(self)
 
-        print(("White" if self.white_to_move else "Black") + " to move.") #кто ходит
+        print(("White" if self.white_to_move else "Black") + " to move.") #who walks
         self.roll_and_parse_dice() # кости
 
-        possible_turns = self.generate_valid_turns(self.dice) #генерирует все возможные варианты
+        possible_turns = self.generate_valid_turns(self.dice) #generates all possible options
         while self.dice:
             if not possible_turns:  # No valid turns
                 print("No valid moves left.")
@@ -97,7 +97,7 @@ class BackgammonGame(Backgammon): # запуск
 
             if self.is_computer_move():
                 print("Computer's turn.")
-                start, end = random.choice(possible_turns)[0] #рандомный вариант компом
+                start, end = random.choice(possible_turns)[0] #random version of the computer
                 print("Computer moves from index", start, "to index", end)
             else:
                 print("Select the start index.") #ход человека
@@ -108,7 +108,7 @@ class BackgammonGame(Backgammon): # запуск
                 end = int(prompt_for_input_from_list(possible_end_indices))
 
             self.move(start, end)
-            self.dice.remove(abs(start - end)) #удаление значение игральной кости использованной
+            self.dice.remove(abs(start - end)) #removing the value of the dice used
             possible_turns = self.generate_valid_turns(self.dice)
         self.save_game()
         self.flip_turn()
